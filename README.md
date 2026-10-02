@@ -21,6 +21,8 @@ The databases are logically linked through shared UUID values (`vehicle_id`, `tr
 ├── mongo/               # MongoDB collections, indexes and workflows
 ├── data_generation/     # Synthetic data seeders
 ├── performance/         # EXPLAIN / execution-statistics scripts and snapshots
+├── data_generation/    # Synthetic data seeders
+├── performance/        # EXPLAIN / execution-statistics scripts and snapshots
 └── docs/                # ERD and MongoDB schema map
 ```
 
@@ -151,7 +153,7 @@ The seeder's default generation parameters may differ from this captured snapsho
 
 ## Team contributions
 
-This was developed as a team database project. My primary contribution was the **MongoDB component: collections, indexes, geospatial queries and related workflows**. PostgreSQL schema/procedural work, data generation and performance testing were shared across other team responsibilities.
+This was developed as a team database project. The README and codebase document the division of work; my primary contribution was the **MongoDB component: collections, indexes, geospatial queries and related workflows**. PostgreSQL schema/procedural work, data generation and performance testing were shared across other team responsibilities.
 
 ## Notes
 

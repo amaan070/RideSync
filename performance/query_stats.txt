@@ -1,0 +1,248 @@
+ table_name | row_count 
+------------+-----------
+ riders     |    300000
+(1 row)
+
+ table_name | row_count 
+------------+-----------
+ vehicles   |     80000
+(1 row)
+
+ table_name | row_count 
+------------+-----------
+ trips      |     99569
+(1 row)
+
+    table_name     | row_count 
+-------------------+-----------
+ wallet_audit_logs |    194206
+(1 row)
+
+        table_name         | row_count 
+---------------------------+-----------
+ mv_vehicle_lifetime_stats |     80000
+(1 row)
+
+          table_name           | row_count 
+-------------------------------+-----------
+ vw_vehicle_revenue_moving_avg |     55370
+(1 row)
+
+ table_name |   status   | row_count 
+------------+------------+-----------
+ trips      | COMPLETED  |     94635
+ trips      | IN TRANSIT |      2964
+ trips      | REQUESTED  |      1970
+(3 rows)
+
+    table_name     |  action_type   | row_count 
+-------------------+----------------+-----------
+ wallet_audit_logs | DEBIT          |         2
+ wallet_audit_logs | ESCROW_HOLD    |     99569
+ wallet_audit_logs | ESCROW_RELEASE |     94635
+(3 rows)
+
+          table_name           | row_count 
+-------------------------------+-----------
+ mv_vehicle_lifetime_stats     |     80000
+ riders                        |    300000
+ trips                         |     99569
+ vehicles                      |     80000
+ vw_vehicle_revenue_moving_avg |     55370
+ wallet_audit_logs             |    194206
+(6 rows)
+
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using vehicles_license_plate_key on vehicles  (cost=2073.42..2081.44 rows=1 width=34) (actual time=34.223..34.233 rows=1.00 loops=1)
+   Index Cond: ((license_plate)::text = ((InitPlan 1).col1)::text)
+   Index Searches: 1
+   Buffers: shared hit=676 read=1
+   InitPlan 1
+     ->  Limit  (cost=2073.00..2073.00 rows=1 width=20) (actual time=26.894..26.898 rows=1.00 loops=1)
+           Buffers: shared hit=673
+           ->  Sort  (cost=2073.00..2273.00 rows=80000 width=20) (actual time=26.890..26.891 rows=1.00 loops=1)
+                 Sort Key: (random())
+                 Sort Method: top-N heapsort  Memory: 25kB
+                 Buffers: shared hit=673
+                 ->  Seq Scan on vehicles vehicles_1  (cost=0.00..1673.00 rows=80000 width=20) (actual time=0.059..12.807 rows=80000.00 loops=1)
+                       Buffers: shared hit=673
+ Planning Time: 0.338 ms
+ Execution Time: 34.311 ms
+(15 rows)
+
+                                                                       QUERY PLAN                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=7845.43..7845.43 rows=3 width=64) (actual time=73.104..73.106 rows=0.00 loops=1)
+   Buffers: shared hit=2571 read=1
+   InitPlan 1
+     ->  Limit  (cost=7829.24..7829.24 rows=1 width=24) (actual time=72.519..72.520 rows=1.00 loops=1)
+           Buffers: shared hit=2569
+           ->  Sort  (cost=7829.24..8580.70 rows=300585 width=24) (actual time=72.516..72.517 rows=1.00 loops=1)
+                 Sort Key: (random())
+                 Sort Method: top-N heapsort  Memory: 25kB
+                 Buffers: shared hit=2569
+                 ->  Seq Scan on riders  (cost=0.00..6326.31 rows=300585 width=24) (actual time=0.044..39.998 rows=300000.00 loops=1)
+                       Buffers: shared hit=2569
+   ->  Sort  (cost=16.19..16.19 rows=3 width=64) (actual time=73.103..73.103 rows=0.00 loops=1)
+         Sort Key: wallet_audit_logs."timestamp" DESC
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=2571 read=1
+         ->  Bitmap Heap Scan on wallet_audit_logs  (cost=4.44..16.16 rows=3 width=64) (actual time=73.094..73.095 rows=0.00 loops=1)
+               Recheck Cond: (rider_id = (InitPlan 1).col1)
+               Buffers: shared hit=2571 read=1
+               ->  Bitmap Index Scan on idx_wallet_audit_logs_rider_id  (cost=0.00..4.44 rows=3 width=0) (actual time=73.051..73.051 rows=0.00 loops=1)
+                     Index Cond: (rider_id = (InitPlan 1).col1)
+                     Index Searches: 1
+                     Buffers: shared hit=2571 read=1
+ Planning Time: 0.368 ms
+ Execution Time: 73.198 ms
+(24 rows)
+
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=0.42..3497.68 rows=9 width=47) (actual time=28.065..28.067 rows=0.00 loops=1)
+   Buffers: shared hit=1429
+   ->  Seq Scan on trips t  (cost=0.00..3421.76 rows=9 width=46) (actual time=28.062..28.062 rows=0.00 loops=1)
+         Filter: (((status)::text = 'COMPLETED'::text) AND (created_at >= (now() - '7 days'::interval)))
+         Rows Removed by Filter: 99569
+         Buffers: shared hit=1429
+   ->  Index Scan using vehicles_pkey on vehicles v  (cost=0.42..8.44 rows=1 width=33) (never executed)
+         Index Cond: (id = t.vehicle_id)
+         Index Searches: 0
+ Planning:
+   Buffers: shared hit=16
+ Planning Time: 0.459 ms
+ Execution Time: 28.122 ms
+(13 rows)
+
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=5907.47..5907.49 rows=8 width=45) (actual time=122.500..122.505 rows=8.00 loops=1)
+   Sort Key: (round(avg(t.fare_amount), 2))
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=2102
+   ->  HashAggregate  (cost=5907.23..5907.35 rows=8 width=45) (actual time=122.480..122.486 rows=8.00 loops=1)
+         Group Key: v.class
+         Batches: 1  Memory Usage: 32kB
+         Buffers: shared hit=2102
+         ->  Hash Join  (cost=2473.00..5159.94 rows=99638 width=11) (actual time=32.402..100.811 rows=99569.00 loops=1)
+               Hash Cond: (t.vehicle_id = v.id)
+               Buffers: shared hit=2102
+               ->  Seq Scan on trips t  (cost=0.00..2425.38 rows=99638 width=22) (actual time=0.023..7.172 rows=99569.00 loops=1)
+                     Buffers: shared hit=1429
+               ->  Hash  (cost=1473.00..1473.00 rows=80000 width=21) (actual time=32.092..32.094 rows=80000.00 loops=1)
+                     Buckets: 131072  Batches: 1  Memory Usage: 5209kB
+                     Buffers: shared hit=673
+                     ->  Seq Scan on vehicles v  (cost=0.00..1473.00 rows=80000 width=21) (actual time=0.017..8.572 rows=80000.00 loops=1)
+                           Buffers: shared hit=673
+ Planning:
+   Buffers: shared hit=16
+ Planning Time: 0.424 ms
+ Execution Time: 123.508 ms
+(22 rows)
+
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=3360.77..3360.80 rows=10 width=47) (actual time=16.790..16.795 rows=10.00 loops=1)
+   Buffers: shared hit=832
+   ->  Sort  (cost=3360.77..3560.77 rows=80000 width=47) (actual time=16.786..16.788 rows=10.00 loops=1)
+         Sort Key: lifetime_earnings DESC
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=832
+         ->  Seq Scan on mv_vehicle_lifetime_stats  (cost=0.00..1632.00 rows=80000 width=47) (actual time=0.024..4.060 rows=80000.00 loops=1)
+               Buffers: shared hit=832
+ Planning Time: 0.154 ms
+ Execution Time: 16.839 ms
+(10 rows)
+
+                                                                                         QUERY PLAN                                                                                          
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Subquery Scan on vw_vehicle_revenue_moving_avg  (cost=33548.39..42222.67 rows=473 width=109) (actual time=458.995..467.903 rows=1.00 loops=1)
+   Filter: (vw_vehicle_revenue_moving_avg.vehicle_id = (InitPlan 1).col1)
+   Rows Removed by Filter: 55369
+   Buffers: shared hit=101335, temp read=976 written=978
+   InitPlan 1
+     ->  Limit  (cost=2073.00..2073.00 rows=1 width=24) (actual time=14.769..14.772 rows=1.00 loops=1)
+           Buffers: shared hit=673
+           ->  Sort  (cost=2073.00..2273.00 rows=80000 width=24) (actual time=14.766..14.767 rows=1.00 loops=1)
+                 Sort Key: (random())
+                 Sort Method: top-N heapsort  Memory: 25kB
+                 Buffers: shared hit=673
+                 ->  Seq Scan on vehicles  (cost=0.00..1673.00 rows=80000 width=24) (actual time=0.083..7.488 rows=80000.00 loops=1)
+                       Buffers: shared hit=673
+   ->  Incremental Sort  (cost=31475.38..38966.47 rows=94656 width=141) (actual time=443.216..449.999 rows=55370.00 loops=1)
+         Sort Key: ((trips.created_at)::date), (dense_rank() OVER w1)
+         Presorted Key: ((trips.created_at)::date)
+         Full-sort Groups: 1  Sort Method: quicksort  Average Memory: 30kB  Peak Memory: 30kB
+         Pre-sorted Groups: 1  Sort Method: external merge  Average Disk: 4424kB  Peak Disk: 4424kB
+         Buffers: shared hit=100662, temp read=976 written=978
+         ->  WindowAgg  (cost=31443.71..33573.45 rows=94656 width=141) (actual time=373.612..418.289 rows=55370.00 loops=1)
+               Window: w1 AS (PARTITION BY ((trips.created_at)::date) ORDER BY (avg((sum(trips.fare_amount))) OVER w1) ROWS UNBOUNDED PRECEDING)
+               Storage: Memory  Maximum Storage: 17kB
+               Buffers: shared hit=100662, temp read=423 written=424
+               ->  Sort  (cost=31443.69..31680.33 rows=94656 width=101) (actual time=373.584..383.993 rows=55370.00 loops=1)
+                     Sort Key: ((trips.created_at)::date), (avg((sum(trips.fare_amount))) OVER w1) DESC
+                     Sort Method: external merge  Disk: 3384kB
+                     Buffers: shared hit=100662, temp read=423 written=424
+                     ->  Hash Join  (cost=2473.79..18443.68 rows=94656 width=101) (actual time=32.055..292.269 rows=55370.00 loops=1)
+                           Hash Cond: (trips.vehicle_id = v.id)
+                           Buffers: shared hit=100662
+                           ->  WindowAgg  (cost=0.79..15722.19 rows=94656 width=84) (actual time=0.164..218.339 rows=55370.00 loops=1)
+                                 Window: w1 AS (PARTITION BY trips.vehicle_id ORDER BY ((trips.created_at)::date) ROWS BETWEEN '6'::bigint PRECEDING AND CURRENT ROW)
+                                 Storage: Memory  Maximum Storage: 17kB
+                                 Buffers: shared hit=99989
+                                 ->  GroupAggregate  (cost=0.62..14065.71 rows=94656 width=52) (actual time=0.147..165.619 rows=55370.00 loops=1)
+                                       Group Key: trips.vehicle_id, ((trips.created_at)::date)
+                                       Buffers: shared hit=99989
+                                       ->  Incremental Sort  (cost=0.62..11935.95 rows=94656 width=26) (actual time=0.135..127.813 rows=94635.00 loops=1)
+                                             Sort Key: trips.vehicle_id, ((trips.created_at)::date)
+                                             Presorted Key: trips.vehicle_id
+                                             Full-sort Groups: 2903  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+                                             Buffers: shared hit=99989
+                                             ->  Index Scan using idx_trips_vehicle_id on trips  (cost=0.42..9296.65 rows=94656 width=26) (actual time=0.044..109.282 rows=94635.00 loops=1)
+                                                   Filter: ((status)::text = 'COMPLETED'::text)
+                                                   Rows Removed by Filter: 4934
+                                                   Index Searches: 1
+                                                   Buffers: shared hit=99989
+                           ->  Hash  (cost=1473.00..1473.00 rows=80000 width=33) (actual time=31.521..31.523 rows=80000.00 loops=1)
+                                 Buckets: 131072  Batches: 1  Memory Usage: 6216kB
+                                 Buffers: shared hit=673
+                                 ->  Seq Scan on vehicles v  (cost=0.00..1473.00 rows=80000 width=33) (actual time=0.056..7.323 rows=80000.00 loops=1)
+                                       Buffers: shared hit=673
+ Planning Time: 0.472 ms
+ Execution Time: 472.256 ms
+(54 rows)
+
+                                                                         QUERY PLAN                                                                          
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=13126.93..13129.21 rows=20 width=35) (actual time=274.171..282.252 rows=20.00 loops=1)
+   Buffers: shared hit=5175
+   InitPlan 1
+     ->  Finalize Aggregate  (cost=5779.41..5779.42 rows=1 width=32) (actual time=121.910..121.996 rows=1.00 loops=1)
+           Buffers: shared hit=2569
+           ->  Gather  (cost=5779.19..5779.40 rows=2 width=32) (actual time=121.610..121.980 rows=2.00 loops=1)
+                 Workers Planned: 1
+                 Workers Launched: 1
+                 Buffers: shared hit=2569
+                 ->  Partial Aggregate  (cost=4779.19..4779.20 rows=1 width=32) (actual time=63.771..63.772 rows=1.00 loops=2)
+                       Buffers: shared hit=2569
+                       ->  Parallel Seq Scan on riders riders_1  (cost=0.00..4337.15 rows=176815 width=6) (actual time=0.016..15.918 rows=150000.00 loops=2)
+                             Buffers: shared hit=2569
+   ->  Gather Merge  (cost=7347.51..18766.80 rows=100195 width=35) (actual time=274.169..282.159 rows=20.00 loops=1)
+         Workers Planned: 1
+         Workers Launched: 1
+         Buffers: shared hit=5175
+         ->  Sort  (cost=6347.50..6494.85 rows=58938 width=35) (actual time=35.455..35.459 rows=10.00 loops=2)
+               Sort Key: riders.wallet_balance DESC
+               Sort Method: top-N heapsort  Memory: 27kB
+               Buffers: shared hit=2606
+               Worker 0:  Sort Method: quicksort  Memory: 25kB
+               ->  Parallel Seq Scan on riders  (cost=0.00..4779.18 rows=58938 width=35) (actual time=0.010..25.552 rows=75266.00 loops=2)
+                     Filter: (wallet_balance > (InitPlan 1).col1)
+                     Rows Removed by Filter: 74734
+                     Buffers: shared hit=2569
+ Planning Time: 1.670 ms
+ Execution Time: 282.349 ms
+(28 rows)
+

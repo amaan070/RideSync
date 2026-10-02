@@ -1,0 +1,97 @@
+############################################################
+RIDESYNC - MONGODB PERFORMANCE & ANALYSIS REPORT
+Generated: Wed Sep 30 2026 21:23:57 GMT+0530 (India Standard Time)
+############################################################
+
+============================================================
+REVIEW ANALYSIS SUMMARY
+============================================================
+
+------------------------------------------------------------
+Overall Rating
+------------------------------------------------------------
+Average Rating   : 4.14 / 5
+Total Reviews    : 141925
+
+------------------------------------------------------------
+Rating Distribution
+------------------------------------------------------------
+  1 star (*) : 4255 review(s)
+  2 star (**) : 6886 review(s)
+  3 star (***) : 17218 review(s)
+  4 star (****) : 49432 review(s)
+  5 star (*****) : 64134 review(s)
+
+------------------------------------------------------------
+Top Feedback Tags
+------------------------------------------------------------
+  1. AC_NOT_WORKING - 23877 mention(s)
+  2. RASH_DRIVING - 23755 mention(s)
+  3. SAFE_DRIVING - 23752 mention(s)
+  4. FRIENDLY_DRIVER - 23692 mention(s)
+  5. LATE_ARRIVAL - 23665 mention(s)
+  6. SMOOTH_RIDE - 23655 mention(s)
+  7. POLITE_DRIVER - 23624 mention(s)
+  8. OVERCHARGED - 23583 mention(s)
+  9. ON_TIME - 23568 mention(s)
+  10. GOOD_MUSIC - 23507 mention(s)
+
+============================================================
+VEHICLE AVAILABILITY
+============================================================
+Available Vehicles Right Now : 563691
+
+============================================================
+NEAREST AVAILABLE VEHICLE
+============================================================
+Vehicle ID     : 6c2a6cd1-ec28-4b47-883a-187feeead25a
+Distance       : 21.297381402231068 meters (~0.02 km)
+Availability   : Available
+
+============================================================
+TOP RATED VEHICLES (WITH METADATA)
+============================================================
+  1. Vehicle 6700cdfd-3a8b-4147-8e48-0b60b5d0326e
+     Avg Rating       : 5.00 (2 review(s))
+     Features         : music_system, wifi
+     Last Inspection  : Wed Aug 12 2026
+  2. Vehicle c7d41d86-b78c-4155-be79-a46806b7f71b
+     Avg Rating       : 5.00 (1 review(s))
+     Features         : ac
+     Last Inspection  : Tue Aug 11 2026
+  3. Vehicle 4bbdd474-3aba-4bca-b5c8-b69ea57d6a61
+     Avg Rating       : 5.00 (1 review(s))
+     Features         : music_system
+     Last Inspection  : Sat Jul 11 2026
+  4. Vehicle 4fa1a966-8507-45bd-b1b0-766d3985d4d8
+     Avg Rating       : 5.00 (1 review(s))
+     Features         : phone_charger, child_seat, wifi
+     Last Inspection  : Thu Jan 15 2026
+  5. Vehicle 4ede2b06-2828-4cb8-be24-a650715ac19b
+     Avg Rating       : 5.00 (1 review(s))
+     Features         : ac
+     Last Inspection  : Mon Jan 26 2026
+  6. Vehicle c8feaf58-2384-40b7-8381-efff054695a4
+     Avg Rating       : 5.00 (1 review(s))
+     Features         : wifi, music_system, child_seat, wheelchair_accessible
+     Last Inspection  : Wed Oct 29 2025
+  7. Vehicle 2f040022-033d-47a9-a807-f4d7ba08e8a8
+     Avg Rating       : 5.00 (2 review(s))
+     Features         : child_seat, ac, music_system, phone_charger
+     Last Inspection  : Wed Jan 21 2026
+  8. Vehicle 8b346db8-f8a8-4c3e-b97e-32aa9985e70d
+     Avg Rating       : 5.00 (1 review(s))
+     Features         : wheelchair_accessible, phone_charger
+     Last Inspection  : Sat Dec 27 2025
+  9. Vehicle e1258ee3-0797-4b01-9bb4-c0d79aa446e2
+     Avg Rating       : 5.00 (1 review(s))
+     Features         : phone_charger, ac
+     Last Inspection  : Sat Aug 30 2025
+  10. Vehicle 2dd77fa5-4f35-4e0f-8143-885b171d0868
+     Avg Rating       : 5.00 (2 review(s))
+     Features         : child_seat
+     Last Inspection  : Wed Jul 15 2026
+
+############################################################
+END OF REPORT
+############################################################

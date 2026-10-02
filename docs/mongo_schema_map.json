@@ -1,0 +1,83 @@
+{
+    "database": "ridesync_mongo",
+    "collections": {
+        "VehicleMetadata": {
+            "description": "Stores flexible metadata and inspection information for vehicles.",
+            "fields": {
+                "vehicle_id": {
+                    "type": "UUID string",
+                    "description": "References the corresponding vehicle ID in PostgreSQL."
+                },
+                "inspection_records": {
+                    "type": "array",
+                    "description": "Stores vehicle inspection history."
+                },
+                "features": {
+                    "type": "object",
+                    "description": "Stores flexible vehicle features."
+                },
+                "created_at": {
+                    "type": "Date",
+                    "description": "Timestamp when the metadata document was created."
+                }
+            }
+        },
+        "TripReviews": {
+            "description": "Stores ratings and feedback for completed trips.",
+            "fields": {
+                "trip_id": {
+                    "type": "UUID string",
+                    "description": "References the corresponding trip ID."
+                },
+                "vehicle_id": {
+                    "type": "UUID string",
+                    "description": "References the corresponding vehicle ID."
+                },
+                "rating": {
+                    "type": "Number",
+                    "description": "Rating given for the trip."
+                },
+                "feedback_tags": {
+                    "type": "array of strings",
+                    "description": "List of feedback tags associated with the trip."
+                },
+                "created_at": {
+                    "type": "Date",
+                    "description": "Timestamp when the review was created."
+                }
+            }
+        },
+        "TelemetryPings": {
+            "description": "Stores vehicle location telemetry for geospatial queries.",
+            "fields": {
+                "vehicle_id": {
+                    "type": "UUID string",
+                    "description": "References the corresponding vehicle ID."
+                },
+                "is_available": {
+                    "type": "Boolean",
+                    "description": "Indicates whether the vehicle is currently available."
+                },
+                "location": {
+                    "type": "GeoJSON Point",
+                    "format": {
+                        "type": "Point",
+                        "coordinates": "[longitude, latitude]"
+                    },
+                    "description": "Current geographic location of the vehicle."
+                },
+                "created_at": {
+                    "type": "Date",
+                    "description": "Timestamp of the telemetry ping. Documents expire after 2 hours."
+                }
+            },
+            "indexes": {
+                "location": "2dsphere",
+                "created_at": {
+                    "type": "TTL",
+                    "expireAfterSeconds": 7200
+                }
+            }
+        }
+    }
+}
